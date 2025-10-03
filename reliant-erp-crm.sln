@@ -1,0 +1,62 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reliant.Api", "Reliant.Api", "{EC8B8256-D955-15BF-A24E-2B1CB45C9992}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reliant.Api", "src\Reliant.Api\Reliant.Api.csproj", "{FF466E86-5139-6AB0-7C31-8AF047CA552A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reliant.Domain", "src\Reliant.Domain\Reliant.Domain.csproj", "{3095B4C9-03F8-4A47-BE61-F91FEF7E78D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reliant.Infrastructure", "src\Reliant.Infrastructure\Reliant.Infrastructure.csproj", "{509711FA-0EDD-4C44-929C-7DF104311641}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reliant.Application", "src\Reliant.Application\Reliant.Application.csproj", "{5C97B3F4-1CE5-42F9-B898-BA5FE7380989}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{476670C4-7C27-4C74-9E59-EC6C00508BA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reliant.Api.Tests", "tests\Reliant.Api.Tests\Reliant.Api.Tests.csproj", "{409EAB9C-0122-4EBE-9DBE-D9A88B492C03}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF466E86-5139-6AB0-7C31-8AF047CA552A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF466E86-5139-6AB0-7C31-8AF047CA552A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF466E86-5139-6AB0-7C31-8AF047CA552A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF466E86-5139-6AB0-7C31-8AF047CA552A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3095B4C9-03F8-4A47-BE61-F91FEF7E78D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3095B4C9-03F8-4A47-BE61-F91FEF7E78D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3095B4C9-03F8-4A47-BE61-F91FEF7E78D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3095B4C9-03F8-4A47-BE61-F91FEF7E78D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{509711FA-0EDD-4C44-929C-7DF104311641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{509711FA-0EDD-4C44-929C-7DF104311641}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{509711FA-0EDD-4C44-929C-7DF104311641}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{509711FA-0EDD-4C44-929C-7DF104311641}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C97B3F4-1CE5-42F9-B898-BA5FE7380989}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C97B3F4-1CE5-42F9-B898-BA5FE7380989}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C97B3F4-1CE5-42F9-B898-BA5FE7380989}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C97B3F4-1CE5-42F9-B898-BA5FE7380989}.Release|Any CPU.Build.0 = Release|Any CPU
+		{409EAB9C-0122-4EBE-9DBE-D9A88B492C03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{409EAB9C-0122-4EBE-9DBE-D9A88B492C03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{409EAB9C-0122-4EBE-9DBE-D9A88B492C03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{409EAB9C-0122-4EBE-9DBE-D9A88B492C03}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EC8B8256-D955-15BF-A24E-2B1CB45C9992} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{FF466E86-5139-6AB0-7C31-8AF047CA552A} = {EC8B8256-D955-15BF-A24E-2B1CB45C9992}
+		{3095B4C9-03F8-4A47-BE61-F91FEF7E78D1} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{509711FA-0EDD-4C44-929C-7DF104311641} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{5C97B3F4-1CE5-42F9-B898-BA5FE7380989} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{409EAB9C-0122-4EBE-9DBE-D9A88B492C03} = {476670C4-7C27-4C74-9E59-EC6C00508BA1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5599BDC0-9DDA-48C7-B387-10CF719D7AAF}
+	EndGlobalSection
+EndGlobal

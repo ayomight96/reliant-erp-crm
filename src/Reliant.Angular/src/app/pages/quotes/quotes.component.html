@@ -1,0 +1,332 @@
+<!-- Header -->
+<div class="flex items-center justify-between pb-5">
+  <!-- Left: back + title -->
+  <div class="flex items-center">
+    <button
+      pButton
+      type="button"
+      class="p-button-text btn-ghost !px-3 !h-10"
+      icon="pi pi-arrow-left"
+      label="Back"
+      (click)="goBack()"
+    ></button>
+
+    <!-- subtle divider to give breathing room -->
+    <span class="mx-3 w-px h-6 bg-gray-200"></span>
+
+    <h2
+      class="text-2xl font-black font-['neueBold'] text-gray-900 m-0 leading-tight"
+    >
+      Quotes for Customer #{{ customerId }}
+    </h2>
+  </div>
+
+  <!-- Right: total + CTA -->
+  <div class="flex items-center gap-3">
+    <span class="text-sm text-gray-600">
+      <span class="font-medium">{{
+        (dt?.filteredValue?.length ?? rows.length) || 0
+      }}</span>
+      <ng-container *ngIf="dt?.filteredValue">
+        <span class="text-gray-400">/ {{ rows.length }}</span>
+      </ng-container>
+      total
+    </span>
+
+    <button
+      pButton
+      type="button"
+      icon="pi pi-plus"
+      label="Create quote for user"
+      class="btn-primary"
+      (click)="openCreate()"
+    ></button>
+  </div>
+</div>
+
+<!-- Search -->
+<div class="flex items-center gap-3 pb-3">
+  <div class="relative w-full md:w-[28rem]">
+    <i
+      class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+    ></i>
+    <input
+      pInputText
+      class="w-full h-11 rounded-xl pl-9 pr-10"
+      placeholder="Search quotes (id/status)…"
+      [(ngModel)]="q"
+      (ngModelChange)="onQueryChange($event)"
+      (keyup.enter)="applyFilter()"
+    />
+    <button
+      *ngIf="q"
+      type="button"
+      aria-label="Clear"
+      class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+      (click)="resetFilter()"
+    >
+      <i class="pi pi-times"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Table -->
+<p-table
+  #dt
+  [value]="rows"
+  [loading]="loading"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[10, 20, 50, 100]"
+  [rowHover]="true"
+  responsiveLayout="scroll"
+  [globalFilterFields]="['id', 'status', 'total']"
+  [tableStyle]="{ width: '100%' }"
+  styleClass="p-datatable-sm p-datatable-gridlines w-full equal-cols"
+  [style]="{ '--cols': cols.length }"
+>
+  <!-- even columns -->
+  <ng-template pTemplate="colgroup">
+    <colgroup>
+      <col *ngFor="let _ of cols" />
+    </colgroup>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="id" class="sticky top-0 bg-white">
+        <div class="flex items-center gap-2">
+          <span>Quote #</span>
+          <p-sortIcon field="id"></p-sortIcon>
+        </div>
+      </th>
+      <th pSortableColumn="createdAt" class="sticky top-0 bg-white">
+        <div class="flex items-center gap-2">
+          <span>Date</span>
+          <p-sortIcon field="createdAt"></p-sortIcon>
+        </div>
+      </th>
+      <th pSortableColumn="itemsCount" class="sticky top-0 bg-white">
+        <div class="flex items-center gap-2">
+          <span>Items</span>
+          <p-sortIcon field="itemsCount"></p-sortIcon>
+        </div>
+      </th>
+      <th pSortableColumn="total" class="sticky top-0 bg-white">
+        <div class="flex items-center justify-end gap-2">
+          <span>Total</span>
+          <p-sortIcon field="total"></p-sortIcon>
+        </div>
+      </th>
+      <th pSortableColumn="status" class="sticky top-0 bg-white">
+        <div class="flex items-center gap-2">
+          <span>Status</span>
+          <p-sortIcon field="status"></p-sortIcon>
+        </div>
+      </th>
+
+      <!-- NEW: Actions (unsortable) -->
+      <th class="sticky top-0 bg-white text-right">Actions</th>
+    </tr>
+  </ng-template>
+
+  <!-- Loading skeletons (add one more td for actions) -->
+  <ng-template pTemplate="loadingbody">
+    <tr *ngFor="let _ of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
+      <td><p-skeleton height="1.2rem" width="8rem"></p-skeleton></td>
+      <td><p-skeleton height="1.2rem" width="10rem"></p-skeleton></td>
+      <td><p-skeleton height="1.2rem" width="5rem"></p-skeleton></td>
+      <td class="text-right">
+        <p-skeleton height="1.2rem" width="6rem"></p-skeleton>
+      </td>
+      <td><p-skeleton height="1.2rem" width="6rem"></p-skeleton></td>
+      <td class="text-right">
+        <p-skeleton height="1.2rem" width="5rem"></p-skeleton>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-qt>
+    <tr>
+      <td class="font-medium whitespace-normal break-words align-top">
+        #{{ qt.id }}
+      </td>
+      <td class="whitespace-normal break-words align-top">
+        {{ qt.createdAt | date : "mediumDate" }}
+      </td>
+      <td class="whitespace-normal break-words align-top">
+        {{ (qt.itemsCount ?? qt.items?.length) || 0 }}
+      </td>
+      <td
+        class="text-right tabular-nums whitespace-normal break-words align-top"
+      >
+        {{ qt.total | currency : "GBP" : "symbol" : "1.2-2" }}
+      </td>
+      <td class="whitespace-normal break-words align-top">
+        <p-tag
+          [value]="qt.status"
+          [severity]="statusSeverity(qt.status)"
+          styleClass="!text-xs !py-1 !px-2"
+        ></p-tag>
+      </td>
+
+      <!-- NEW: action icons -->
+      <td class="text-right align-top">
+        <div class="inline-flex items-center gap-1">
+          <button
+            pButton
+            type="button"
+            class="p-button-text p-button-sm p-button-rounded"
+            icon="pi pi-eye"
+            pTooltip="View"
+            (click)="openView(qt)"
+          ></button>
+          <button
+            pButton
+            type="button"
+            class="p-button-text p-button-sm p-button-rounded"
+            icon="pi pi-trash"
+            pTooltip="Delete"
+            (click)="confirmDelete(qt)"
+          ></button>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="6" class="text-center text-gray-500 py-8">
+        No quotes by the user.
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Create Quote dialog (unchanged) -->
+<p-dialog
+  header="Create Quote"
+  [(visible)]="createOpen"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [blockScroll]="true"
+  [draggable]="false"
+  [style]="{ width: '62rem', maxWidth: '95vw' }"
+  [contentStyle]="{ padding: '0', overflow: 'hidden' }"
+  contentStyleClass="!pt-0"
+  [baseZIndex]="11000"
+  [breakpoints]="{ '960px': '95vw', '640px': '98vw' }"
+>
+  <p-card styleClass="cq-card">
+    <app-create-quote
+      [inline]="true"
+      [customerId]="customerId"
+      (done)="onCreateDone($event)"
+    ></app-create-quote>
+  </p-card>
+</p-dialog>
+
+<!-- NEW: Delete confirm (PrimeNG ConfirmDialog) -->
+<p-confirmDialog
+  [style]="{ width: '28rem', maxWidth: '95vw' }"
+></p-confirmDialog>
+
+<!-- NEW: View dialog -->
+<p-dialog
+  [(visible)]="viewOpen"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [style]="{ width: '48rem', maxWidth: '95vw' }"
+  [baseZIndex]="11000"
+  header="Quote #{{ selectedQuote?.id }}"
+>
+  <div *ngIf="selectedQuote as q" class="space-y-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+      <div>
+        <span class="text-gray-500">Date:</span>
+        {{ q.createdAt | date : "medium" }}
+      </div>
+      <div>
+        <span class="text-gray-500">Status:</span>
+        <p-tag
+          [value]="q.status"
+          [severity]="statusSeverity(q.status)"
+          styleClass="!text-xs !py-1 !px-2 ml-1 align-middle"
+        ></p-tag>
+      </div>
+      <div>
+        <span class="text-gray-500">Items:</span> {{ q.items.length || 0 }}
+      </div>
+      <div class="tabular-nums text-right sm:text-left">
+        <span class="text-gray-500">Total:</span>
+        {{ q.total | currency : "GBP" : "symbol" : "1.2-2" }}
+      </div>
+    </div>
+
+    <div class="border rounded-lg overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="text-left p-2">Product</th>
+            <th class="text-left p-2">Size</th>
+            <th class="text-left p-2">Material</th>
+            <th class="text-left p-2">Glazing</th>
+            <th class="text-right p-2">Qty</th>
+            <th class="text-right p-2">Unit</th>
+            <th class="text-right p-2">Line total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let it of q.items" class="border-t">
+            <td class="p-2">{{ it.productName || it.productId }}</td>
+            <td class="p-2">{{ it.widthMm }} × {{ it.heightMm }} mm</td>
+            <td class="p-2">{{ it.material || "—" }}</td>
+            <td class="p-2">{{ it.glazing || "—" }}</td>
+            <td class="p-2 text-right tabular-nums">{{ it.qty }}</td>
+            <td class="p-2 text-right tabular-nums">
+              {{
+                it.unitPrice != null
+                  ? (it.unitPrice | currency : "GBP" : "symbol")
+                  : "—"
+              }}
+            </td>
+            <td class="p-2 text-right tabular-nums">
+              {{ lineTotal(it) | currency : "GBP" : "symbol" }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- NEW: AI summary panel -->
+  <div class="mt-4">
+    <div class="flex items-center justify-between mb-2">
+      <h4 class="font-medium m-0">AI Summary</h4>
+      <button
+        pButton
+        type="button"
+        class="p-button-text p-button-sm"
+        icon="pi pi-refresh"
+        label="Regenerate"
+        (click)="regenerateSummary()"
+      ></button>
+    </div>
+
+    <div class="border rounded-lg p-3 bg-[var(--light)] text-sm">
+      <ng-container *ngIf="!summaryLoading; else aiSummaryLoading">
+        <pre class="whitespace-pre-wrap m-0">{{ summaryText }}</pre>
+      </ng-container>
+
+      <ng-template #aiSummaryLoading>
+        <div class="space-y-2">
+          <p-skeleton width="100%" height="1rem"></p-skeleton>
+          <p-skeleton width="95%" height="1rem"></p-skeleton>
+          <p-skeleton width="90%" height="1rem"></p-skeleton>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</p-dialog>

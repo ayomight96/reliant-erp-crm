@@ -1,0 +1,189 @@
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+  <div>
+    <h2 class="text-2xl font-black font-['neueBold'] text-gray-900 m-0">
+      Admin
+    </h2>
+    <p class="text-xs text-gray-500">
+      Assign roles to users. Manager role required.
+    </p>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="flex items-center gap-3 pb-3 pt-4">
+  <div class="relative w-full md:w-[28rem]">
+    <i
+      class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+    ></i>
+    <input
+      pInputText
+      class="w-full h-11 rounded-xl pl-9 pr-10"
+      placeholder="Search users (email or role)"
+      [(ngModel)]="q"
+      (ngModelChange)="onQueryChange($event)"
+      (keyup.enter)="applyFilter()"
+    />
+    <button
+      *ngIf="q"
+      type="button"
+      aria-label="Clear"
+      class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+      (click)="resetFilter()"
+    >
+      <i class="pi pi-times"></i>
+    </button>
+  </div>
+
+  <button
+    pButton
+    type="button"
+    icon="pi pi-refresh"
+    class="p-button-text"
+    (click)="loadUsers()"
+  ></button>
+</div>
+
+<!-- Users Table -->
+<p-table
+  #dt
+  [value]="users"
+  [loading]="loading"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[10, 20, 50, 100]"
+  [rowHover]="true"
+  [globalFilterFields]="['email', 'rolesStr']"
+  responsiveLayout="scroll"
+  [tableStyle]="{ width: '100%' }"
+  styleClass="p-datatable-sm p-datatable-gridlines w-full equal-cols"
+  [style]="{ '--cols': cols.length }"
+>
+  <!-- equal columns -->
+  <ng-template pTemplate="colgroup">
+    <colgroup>
+      <col *ngFor="let _ of cols" />
+    </colgroup>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="sticky top-0 bg-white">ID</th>
+      <th class="sticky top-0 bg-white">Name</th>
+      <th class="sticky top-0 bg-white">Email</th>
+      <th class="sticky top-0 bg-white">Roles</th>
+      <th class="sticky top-0 bg-white text-right">Action</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="loadingbody">
+    <tr *ngFor="let _ of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
+      <td><p-skeleton height="1.2rem" width="4rem"></p-skeleton></td>
+      <td><p-skeleton height="1.2rem" width="16rem"></p-skeleton></td>
+      <td><p-skeleton height="1.2rem" width="10rem"></p-skeleton></td>
+      <td class="text-right">
+        <p-skeleton height="2rem" width="8rem"></p-skeleton>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-u>
+    <tr>
+      <td class="tabular-nums">{{ u.id }}</td>
+      <td class="font-medium">{{ u.fullName || "—" }}</td>
+      <td class="font-medium">{{ u.email }}</td>
+      <td>
+        <ng-container *ngIf="u.roles?.length; else noRole">
+          <p-tag
+            *ngFor="let r of u.roles"
+            [value]="r"
+            severity="info"
+            class="!text-[11px] mr-1 mb-1"
+          ></p-tag>
+        </ng-container>
+        <ng-template #noRole><span class="text-gray-400">—</span></ng-template>
+      </td>
+      <td class="text-right">
+        <button
+          pButton
+          type="button"
+          class="p-button-sm p-button-rounded btn-quotes !h-9 !px-3"
+          icon="pi pi-user-edit"
+          label="Assign Role"
+          (click)="openAssign(u)"
+        ></button>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="4" class="text-center text-gray-500 py-8">
+        No users found.
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Assign Role Modal -->
+<p-dialog
+  [header]="'Assign Role · ' + (selected?.fullName || selected?.email || '')"
+  [(visible)]="assignOpen"
+  [modal]="true"
+  [dismissableMask]="true"
+  [blockScroll]="true"
+  [style]="{ width: '32rem', maxWidth: '95vw' }"
+  [baseZIndex]="11000"
+  (onHide)="assignOpen = false"
+>
+  <form [formGroup]="form" (ngSubmit)="submitAssign()">
+    <div class="space-y-2">
+      <div class="text-sm text-gray-700">
+        <div class="font-semibold text-base">
+          {{ selected?.fullName || "—" }}
+        </div>
+        <!-- ⬅️ name prominent -->
+        <div class="text-xs text-gray-500">{{ selected?.email }}</div>
+        <div class="text-xs text-gray-500">ID: {{ selected?.id }}</div>
+        <div class="mt-2" *ngIf="selected?.roles?.length">
+          <span class="text-xs text-gray-500 mr-1">Current:</span>
+          <p-tag
+            *ngFor="let r of selected?.roles"
+            [value]="r"
+            severity="info"
+            class="!text-[11px] mr-1"
+          ></p-tag>
+        </div>
+      </div>
+
+      <div class="mt-3 space-y-1">
+        <label class="text-sm font-medium">Role</label>
+        <p-dropdown
+          [options]="roles"
+          formControlName="role"
+          class="w-full"
+          [appendTo]="'body'"
+          panelStyleClass="admin-role-panel"
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="flex justify-end gap-2 mt-5">
+      <button
+        pButton
+        type="button"
+        class="p-button-text"
+        label="Cancel"
+        (click)="assignOpen = false"
+      ></button>
+      <button
+        pButton
+        type="submit"
+        label="Assign"
+        class="px-5"
+        [disabled]="loading || form.invalid"
+        [loading]="loading"
+      ></button>
+    </div>
+  </form>
+</p-dialog>

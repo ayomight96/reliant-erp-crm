@@ -1,0 +1,220 @@
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+  <h2 class="text-2xl font-black font-['neueBold'] text-gray-900 m-0">
+    Customers
+  </h2>
+
+  <!-- Add Customer (allowed for Sales or Manager since backend allows create) -->
+  <button
+    pButton
+    type="button"
+    icon="pi pi-plus"
+    label="Add Customer"
+    class="btn-primary"
+    (click)="openCreate()"
+  ></button>
+</div>
+
+<!-- Filters / actions -->
+<div class="flex items-center gap-3 pb-3 pt-4">
+  <!-- Search input with prefix icon + inline clear -->
+  <div class="relative w-full md:w-[36rem]">
+    <i
+      class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+    ></i>
+
+    <input
+      pInputText
+      class="w-full h-11 rounded-xl pl-9 pr-10"
+      placeholder="Search name or email"
+      [(ngModel)]="q"
+      (ngModelChange)="onQueryChange($event)"
+      (keyup.enter)="search()"
+    />
+
+    <!-- Clear button -->
+    <button
+      *ngIf="q"
+      type="button"
+      aria-label="Clear"
+      class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+      (click)="reset()"
+    >
+      <i class="pi pi-times"></i>
+    </button>
+  </div>
+
+  <!-- Compact Search button -->
+  <button
+    pButton
+    type="button"
+    label="Search"
+    class="p-button-sm p-2"
+    [loading]="loading"
+    (click)="search()"
+  ></button>
+</div>
+
+<!-- Table -->
+<p-table
+  #dt
+  [value]="rows"
+  [dataKey]="'id'"
+  [loading]="loading"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[10, 20, 50, 100]"
+  [rowHover]="true"
+  responsiveLayout="scroll"
+  styleClass="p-datatable-sm p-datatable-gridlines w-full"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="sticky top-0 bg-white">Name</th>
+      <th class="sticky top-0 bg-white">Email</th>
+      <th class="sticky top-0 bg-white">Phone</th>
+      <th class="sticky top-0 bg-white">City</th>
+      <th class="sticky top-0 bg-white">Postcode</th>
+      <th class="sticky top-0 bg-white">Segment</th>
+      <th class="sticky top-0 bg-white text-right">Actions</th>
+      <!-- renamed -->
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="loadingbody">
+    <tr *ngFor="let _ of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
+      <td><p-skeleton height="1.2rem"></p-skeleton></td>
+      <td><p-skeleton height="1.2rem" width="10rem"></p-skeleton></td>
+      <td><p-skeleton height="1.2rem" width="7rem"></p-skeleton></td>
+      <td><p-skeleton height="1.2rem" width="8rem"></p-skeleton></td>
+      <td><p-skeleton height="1.2rem" width="6rem"></p-skeleton></td>
+      <td><p-skeleton height="1.2rem" width="6rem"></p-skeleton></td>
+      <td class="text-right">
+        <p-skeleton height="2rem" width="11rem"></p-skeleton>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-c>
+    <tr>
+      <td class="font-medium">{{ c.name }}</td>
+      <td>
+        <a *ngIf="c.email" class="text-[var(--primary)] hover:underline">{{
+          c.email
+        }}</a>
+        <span *ngIf="!c.email" class="text-gray-400">—</span>
+      </td>
+      <td>{{ c.phone || "—" }}</td>
+      <td>{{ c.city || "—" }}</td>
+      <td>{{ c.postcode || "—" }}</td>
+      <td>
+        <p-tag *ngIf="c.segment; else none" [value]="c.segment"></p-tag>
+        <ng-template #none><span class="text-gray-400">—</span></ng-template>
+      </td>
+
+      <td class="text-right space-x-2">
+        <!-- View Quotes -->
+        <a
+          pButton
+          class="p-button-sm p-button-rounded btn-quotes !h-9 !px-3"
+          icon="pi pi-file"
+          label="Quotes"
+          [routerLink]="['/customers', c.id, 'quotes']"
+        ></a>
+
+        <!-- Edit (Manager only) -->
+        <button
+          *ngIf="auth.isManager()"
+          pButton
+          type="button"
+          class="p-button-sm p-button-rounded !h-9 !px-3"
+          icon="pi pi-pencil"
+          label="Edit"
+          (click)="openEdit(c)"
+        ></button>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7" class="text-center text-gray-500 py-6">
+        No customers found.
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Modal: Create / Update -->
+<p-dialog
+  [(visible)]="modalOpen"
+  [modal]="true"
+  [dismissableMask]="true"
+  [blockScroll]="true"
+  [style]="{ width: '40rem', maxWidth: '95vw' }"
+  [baseZIndex]="11000"
+  [header]="
+    formMode === 'create'
+      ? 'Add Customer'
+      : 'Update Customer · ' + (editing?.name || '')
+  "
+  (onHide)="cancel()"
+>
+  <form
+    [formGroup]="form"
+    (ngSubmit)="save()"
+    class="grid gap-4 md:grid-cols-2"
+  >
+    <div class="md:col-span-2 space-y-1">
+      <label class="text-sm font-medium"
+        >Name <span class="text-red-500">*</span></label
+      >
+      <input pInputText formControlName="name" class="w-full" />
+    </div>
+
+    <div class="space-y-1">
+      <label class="text-sm font-medium">Email</label>
+      <input pInputText formControlName="email" class="w-full" />
+    </div>
+
+    <div class="space-y-1">
+      <label class="text-sm font-medium">Phone</label>
+      <input pInputText formControlName="phone" class="w-full" />
+    </div>
+
+    <div class="md:col-span-2 space-y-1">
+      <label class="text-sm font-medium">Address</label>
+      <input pInputText formControlName="addressLine1" class="w-full" />
+    </div>
+
+    <div class="space-y-1">
+      <label class="text-sm font-medium">City</label>
+      <input pInputText formControlName="city" class="w-full" />
+    </div>
+
+    <div class="space-y-1">
+      <label class="text-sm font-medium">Postcode</label>
+      <input pInputText formControlName="postcode" class="w-full" />
+    </div>
+
+    <div class="md:col-span-2 flex justify-end gap-2 pt-2">
+      <button
+        pButton
+        type="button"
+        class="p-button-text"
+        label="Cancel"
+        (click)="cancel()"
+      ></button>
+      <button
+        pButton
+        type="submit"
+        [label]="formMode === 'create' ? 'Add Customer' : 'Update Customer'"
+        [loading]="saving"
+        [disabled]="
+          saving || form.invalid || (!auth.isManager() && formMode === 'update')
+        "
+        class="px-5"
+      ></button>
+    </div>
+  </form>
+</p-dialog>

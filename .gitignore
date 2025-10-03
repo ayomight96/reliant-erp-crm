@@ -1,0 +1,20 @@
+# dotnet
+bin/
+obj/
+*.user
+*.suo
+*.swp
+
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# node (later)
+node_modules/
+
+# OS
+.DS_Store
+
+# docker
+*.env

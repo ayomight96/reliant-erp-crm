@@ -1,0 +1,293 @@
+<p-card styleClass="cq-card cq">
+  <ng-template pTemplate="header" *ngIf="!inline">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-black font-['neueBold'] text-gray-900 m-0">
+          New Quote
+        </h2>
+        <p class="text-xs text-gray-500 mt-1">
+          Provide dimensions and options. Leave unit price empty to use AI.
+        </p>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="content">
+    <div class="cq-body">
+      <form (ngSubmit)="submit()" [formGroup]="form" class="cq-grid">
+        <!-- LEFT: Fields -->
+        <div class="cq-fields">
+          <!-- Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-x-4 gap-y-5">
+            <!-- Customer (full) -->
+            <div class="cq-field md:col-span-6">
+              <label for="customerId" class="cq-label">
+                Customer
+                <i
+                  class="pi pi-info-circle cq-hint-icon"
+                  pTooltip="Use seeded customer #1 for demo."
+                  tooltipPosition="top"
+                ></i>
+              </label>
+              <p-inputNumber
+                inputId="customerId"
+                [min]="1"
+                formControlName="customerId"
+                class="w-full"
+              ></p-inputNumber>
+              <small
+                *ngIf="
+                  form.get('customerId')?.invalid &&
+                  form.get('customerId')?.touched
+                "
+                class="text-xs text-red-600"
+                >Customer is required.</small
+              >
+            </div>
+
+            <!-- Product (4) + Qty (2) -->
+            <div class="cq-field md:col-span-4">
+              <label for="productId" class="cq-label">Product</label>
+
+              <p-dropdown
+                inputId="productId"
+                [options]="products"
+                [filter]="true"
+                [showClear]="true"
+                [autoDisplayFirst]="false"
+                optionLabel="name"
+                optionValue="id"
+                [disabled]="productsLoading"
+                placeholder="Select a product"
+                formControlName="productId"
+                class="w-full"
+              >
+                <ng-template pTemplate="selectedItem">
+                  <span *ngIf="selectedProduct; else ph">{{
+                    selectedProduct.name
+                  }}</span>
+                  <ng-template #ph>—</ng-template>
+                </ng-template>
+                <ng-template let-p pTemplate="item">
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                      <div class="font-medium truncate">{{ p.name }}</div>
+                      <div class="text-xs text-gray-500 truncate">
+                        {{ p.productType }}
+                      </div>
+                    </div>
+                    <div
+                      class="text-xs tabular-nums text-gray-700 whitespace-nowrap"
+                    >
+                      {{ p.basePrice | currency : "GBP" : "symbol" }}
+                    </div>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+
+              <div *ngIf="productsLoading" class="mt-2">
+                <p-skeleton height="1.75rem" width="100%"></p-skeleton>
+              </div>
+
+              <small
+                *ngIf="
+                  form.get('productId')?.invalid &&
+                  form.get('productId')?.touched
+                "
+                class="text-xs text-red-600"
+                >Product is required.</small
+              >
+            </div>
+
+            <div class="cq-field md:col-span-2">
+              <label for="qty" class="cq-label">Qty</label>
+              <p-inputNumber
+                inputId="qty"
+                [min]="1"
+                formControlName="qty"
+                class="w-full"
+                [showButtons]="true"
+              ></p-inputNumber>
+              <small
+                *ngIf="form.get('qty')?.invalid && form.get('qty')?.touched"
+                class="text-xs text-red-600"
+                >Quantity must be at least 1.</small
+              >
+            </div>
+
+            <!-- Size -->
+            <div class="cq-field md:col-span-3">
+              <label for="widthMm" class="cq-label">Width</label>
+              <p-inputNumber
+                inputId="widthMm"
+                [min]="300"
+                [suffix]="' mm'"
+                [useGrouping]="false"
+                formControlName="widthMm"
+                class="w-full"
+              ></p-inputNumber>
+              <small
+                *ngIf="
+                  form.get('widthMm')?.invalid && form.get('widthMm')?.touched
+                "
+                class="text-xs text-red-600"
+                >Min width is 300&nbsp;mm.</small
+              >
+            </div>
+
+            <div class="cq-field md:col-span-3">
+              <label for="heightMm" class="cq-label">Height</label>
+              <p-inputNumber
+                inputId="heightMm"
+                [min]="300"
+                [suffix]="' mm'"
+                [useGrouping]="false"
+                formControlName="heightMm"
+                class="w-full"
+              ></p-inputNumber>
+              <small
+                *ngIf="
+                  form.get('heightMm')?.invalid && form.get('heightMm')?.touched
+                "
+                class="text-xs text-red-600"
+                >Min height is 300&nbsp;mm.</small
+              >
+            </div>
+
+            <!-- Material + Glazing -->
+            <div class="cq-field md:col-span-3">
+              <label for="material" class="cq-label">Material</label>
+              <p-dropdown
+                inputId="material"
+                [options]="materials"
+                [showClear]="false"
+                formControlName="material"
+                class="w-full"
+              ></p-dropdown>
+            </div>
+
+            <div class="cq-field md:col-span-3">
+              <label for="glazing" class="cq-label">Glazing</label>
+              <p-dropdown
+                inputId="glazing"
+                [options]="glazings"
+                [showClear]="false"
+                formControlName="glazing"
+                class="w-full"
+              ></p-dropdown>
+            </div>
+
+            <!-- AI toggle + Unit Price -->
+            <div class="cq-field md:col-span-6">
+              <div class="flex items-center justify-between mb-2">
+                <label for="unitPrice" class="cq-label">Unit Price</label>
+
+                <!-- Use AI toggle -->
+                <label class="inline-flex items-center gap-2 text-sm">
+                  <span class="text-gray-600">Use AI price</span>
+                  <p-inputSwitch formControlName="useAi"></p-inputSwitch>
+                </label>
+              </div>
+
+              <p-inputNumber
+                inputId="unitPrice"
+                [min]="1"
+                mode="currency"
+                currency="GBP"
+                formControlName="unitPrice"
+                class="w-full"
+                [placeholder]="aiPlaceholderText"
+              ></p-inputNumber>
+
+              <div
+                class="mt-1 text-xs text-gray-500 flex items-center justify-between"
+              >
+                <span *ngIf="form.value.useAi; else customPriceNote">
+                  Leave to AI. We’ll estimate based on product, size & options.
+                </span>
+                <ng-template #customPriceNote>
+                  Enter a custom unit price to override AI.
+                </ng-template>
+
+                <span class="tabular-nums"
+                  >Unit for calc:
+                  <strong>{{
+                    computedUnit | currency : "GBP" : "symbol"
+                  }}</strong></span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Sticky actions -->
+          <div class="cq-actions">
+            <div class="flex gap-2">
+              <button
+                pButton
+                type="button"
+                class="p-button-text"
+                icon="pi pi-times"
+                label="Reset"
+                (click)="resetForm()"
+              ></button>
+              <button
+                pButton
+                type="submit"
+                label="Create Quote"
+                icon="pi pi-check"
+                class="px-6"
+                [disabled]="form.invalid || productsLoading || submitting"
+                [loading]="submitting"
+              ></button>
+              <button
+                *ngIf="inline"
+                pButton
+                type="button"
+                class="p-button-text"
+                label="Close"
+                (click)="cancel()"
+              ></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Summary -->
+        <aside class="cq-summary">
+          <h3 class="font-medium mb-3">Quote Summary</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>
+              <span class="text-gray-500">Product:</span>
+              {{ productName }}
+            </li>
+            <li>
+              <span class="text-gray-500">Qty:</span> {{ form.value.qty }}
+            </li>
+            <li>
+              <span class="text-gray-500">Size:</span>
+              {{ form.value.widthMm }} × {{ form.value.heightMm }} mm
+            </li>
+            <li>
+              <span class="text-gray-500">Material:</span>
+              {{ form.value.material }}
+            </li>
+            <li>
+              <span class="text-gray-500">Glazing:</span>
+              {{ form.value.glazing }}
+            </li>
+            <li class="tabular-nums">
+              <span class="text-gray-500">Unit:</span>
+              <strong>{{ computedUnit | currency : "GBP" : "symbol" }}</strong>
+              <span class="text-gray-400"
+                >({{ form.value.useAi ? "AI" : "Custom" }})</span
+              >
+            </li>
+            <li class="tabular-nums">
+              <span class="text-gray-500">Line total:</span>
+              <strong>{{ lineTotal | currency : "GBP" : "symbol" }}</strong>
+            </li>
+          </ul>
+        </aside>
+      </form>
+    </div>
+  </ng-template>
+</p-card>

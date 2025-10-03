@@ -1,0 +1,191 @@
+<div class="min-h-screen grid grid-cols-1 md:grid-cols-[16rem_1fr] bg-gray-50">
+  <!-- Sidebar -->
+  <aside
+    #sidebar
+    class="hidden md:flex flex-col border-r bg-white/90 backdrop-blur px-4 py-5"
+  >
+    <a routerLink="/" class="inline-flex items-center gap-2 mb-6">
+      <span
+        class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white font-semibold"
+        >R</span
+      >
+      <span class="text-lg font-semibold">Reliant ERP/CRM</span>
+    </a>
+
+    <nav class="flex flex-col gap-1 text-sm">
+      <a
+        routerLink="/customers"
+        routerLinkActive="!bg-indigo-50 !text-indigo-700 ring-1 ring-indigo-100"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+      >
+        <i class="pi pi-users text-gray-500"></i><span>Customers</span>
+      </a>
+      <a
+        routerLink="/products"
+        routerLinkActive="!bg-indigo-50 !text-indigo-700 ring-1 ring-indigo-100"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+      >
+        <i class="pi pi-box text-gray-500"></i><span>Products</span>
+      </a>
+      <!-- <a
+        routerLink="/quotes/new"
+        routerLinkActive="!bg-indigo-50 !text-indigo-700 ring-1 ring-indigo-100"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+      >
+        <i class="pi pi-file-edit text-gray-500"></i><span>New Quote</span>
+      </a> -->
+      <a
+        *ngIf="auth.isManager()"
+        routerLink="/admin"
+        routerLinkActive="!bg-indigo-50 !text-indigo-700 ring-1 ring-indigo-100"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+      >
+        <i class="pi pi-shield text-gray-500"></i><span>Admin</span>
+      </a>
+    </nav>
+
+    <!-- Sidebar footer -->
+    <div class="mt-auto pt-5 border-t">
+      <ng-container *ngIf="auth.isAuthenticated(); else guest">
+        <div class="flex items-center justify-between gap-2">
+          <!-- Identity -->
+          <div class="flex items-center gap-3 min-w-0">
+            <p-avatar
+              [label]="avatarInitials"
+              shape="circle"
+              styleClass="bg-indigo-600 text-white w-9 h-9 text-xs"
+            ></p-avatar>
+
+            <div class="leading-tight min-w-0">
+              <div class="text-sm font-medium truncate">{{ auth.email }}</div>
+              <div class="flex flex-wrap gap-1 mt-1">
+                <p-tag
+                  *ngFor="let r of auth.roles"
+                  [value]="r"
+                  severity="info"
+                  class="!text-[10px]"
+                ></p-tag>
+              </div>
+            </div>
+          </div>
+
+          <!-- Overflow menu trigger -->
+          <button
+            pButton
+            type="button"
+            class="p-button-text p-button-rounded"
+            icon="pi pi-ellipsis-v"
+            aria-label="Account menu"
+            (click)="userMenu.toggle($event)"
+          ></button>
+        </div>
+      </ng-container>
+
+      <ng-template #guest>
+        <a
+          pButton
+          routerLink="/login"
+          icon="pi pi-sign-in"
+          label="Login"
+          class="w-full p-button-sm"
+        ></a>
+      </ng-template>
+    </div>
+
+    <!-- Popup menu (keep inside the sidebar so it anchors nicely) -->
+    <p-menu
+      #userMenu
+      [popup]="true"
+      [model]="userMenuItems"
+      appendTo="body"
+      [baseZIndex]="20000"
+      [autoZIndex]="true"
+    ></p-menu>
+  </aside>
+
+  <!-- Column for topbar + content -->
+  <div class="flex flex-col min-h-screen">
+    <!-- Topbar -->
+    <header
+      class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-gray-200"
+    >
+      <div class="page h-14 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <!-- Mobile menu -->
+          <button
+            class="md:hidden p-button p-button-text"
+            pButton
+            icon="pi pi-bars"
+            (click)="menuOpen = !menuOpen"
+          ></button>
+          <div class="text-sm text-gray-500">
+            <span class="font-semibold text-gray-900">Reliant ERP/CRM</span>
+            <span class="mx-2">/</span>
+            <span>{{ crumb }}</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <ng-container *ngIf="auth.isAuthenticated(); else guest2">
+            <span class="hidden sm:block text-sm text-gray-700">{{
+              auth.email
+            }}</span>
+            <!-- <button
+              pButton
+              icon="pi pi-sign-out"
+              class="p-button-rounded p-button-text"
+              (click)="auth.logout()"
+            ></button> -->
+          </ng-container>
+          <ng-template #guest2>
+            <a
+              pButton
+              routerLink="/login"
+              label="Login"
+              class="p-button-sm"
+            ></a>
+          </ng-template>
+        </div>
+      </div>
+      <!-- Mobile menu -->
+      <nav *ngIf="menuOpen" class="md:hidden page pb-3 grid grid-cols-2 gap-2">
+        <a
+          pButton
+          routerLink="/customers"
+          label="Customers"
+          class="p-button-outlined"
+        ></a>
+        <a
+          pButton
+          routerLink="/products"
+          label="Products"
+          class="p-button-outlined"
+        ></a>
+        <a
+          pButton
+          routerLink="/quotes/new"
+          label="New Quote"
+          class="p-button-outlined"
+        ></a>
+        <a
+          *ngIf="auth.isManager()"
+          pButton
+          routerLink="/admin"
+          label="Admin"
+          class="p-button-outlined"
+        ></a>
+      </nav>
+    </header>
+
+    <!-- Content -->
+    <!-- layout.component.html -->
+    <main class="page-fluid py-6 flex-1">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+<p-confirmDialog
+  key="layoutConfirm"
+  [baseZIndex]="12000"
+  [style]="{ width: '28rem', maxWidth: 'calc(100vw - 2rem)' }"
+  styleClass="logout-dialog"
+></p-confirmDialog>

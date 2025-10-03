@@ -1,0 +1,583 @@
+@import "ngx-toastr/toastr";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* If not loaded via angular.json, uncomment: */
+/* @import "primeicons/primeicons.css"; */
+
+/* ========= Brand ========= */
+:root {
+  --primary: #6099ef;
+  --grey: #54565a;
+  --light: #f8f7fc;
+
+  /* Create-quote controls */
+  --cq-control-h: 2.75rem;
+}
+
+/* ========= Fonts ========= */
+@font-face {
+  font-family: "neueBlack";
+  src: url("./assets/font/Neue-Plak-Black.ttf");
+  font-weight: 900;
+}
+@font-face {
+  font-family: "neue";
+  src: url("./assets/font/Neue-Plak-Regular.ttf");
+  font-weight: 400;
+}
+@font-face {
+  font-family: "neueBold";
+  src: url("./assets/font/Neue-Plak-Bold.ttf");
+  font-weight: 700;
+}
+@font-face {
+  font-family: "neueLight";
+  src: url("./assets/font/Neue-Plak-Light.ttf");
+  font-weight: 200;
+}
+
+/* ========= Base ========= */
+body {
+  overflow-x: hidden !important;
+  font-family: "neue";
+  background: var(--light);
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "neueBold";
+  color: #0f172a;
+} /* slate-900 */
+
+/* ========= Layout helpers ========= */
+.page {
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+.surface {
+  @apply bg-white border border-gray-200 rounded-2xl shadow;
+}
+.section {
+  @apply surface p-5 md:p-6;
+}
+
+/* ========= Inputs =========
+   Scope underline to native inputs only. Prime widgets get rounded look.
+*/
+input:not(.p-inputtext) {
+  @apply border-b border-gray-200 rounded-none py-3 outline-none shadow-none !w-full text-sm lg:!text-[1rem];
+}
+.p-inputtext,
+.p-password input,
+.p-dropdown,
+.p-calendar {
+  @apply !rounded-xl !h-11 font-['neue'];
+}
+.p-dropdown,
+.p-calendar {
+  @apply border border-gray-200 shadow-none;
+}
+
+/* Float label tweaks */
+.p-float-label input:focus ~ label,
+.p-float-label input.p-filled ~ label,
+.p-float-label textarea:focus ~ label,
+.p-float-label textarea.p-filled ~ label,
+.p-float-label .p-inputwrapper-focus ~ label,
+.p-float-label .p-inputwrapper-filled ~ label {
+  top: 0.25rem;
+  font-size: 12px;
+  left: 0;
+}
+.p-float-label label {
+  @apply !left-0 text-sm lg:text-[1rem];
+}
+
+/* Input visuals */
+.p-inputtext {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+}
+.p-input-icon-left > i {
+  left: 0.75rem;
+  color: #94a3b8;
+} /* slate-400 */
+.p-input-icon-left .p-inputtext {
+  padding-left: 2.25rem;
+}
+
+/* InputGroup polish (attached button) */
+.p-inputgroup > .p-inputtext {
+  border-right: 0;
+}
+.p-inputgroup .p-button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.p-inputgroup .p-inputgroup-addon:first-child,
+.p-inputgroup > .p-inputtext {
+  border-top-left-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+.p-inputgroup .p-button:last-child {
+  border-top-right-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+}
+
+/* ========= Buttons ========= */
+.p-button {
+  border-radius: 0.625rem;
+} /* ~10px */
+
+.p-button.p-button-text {
+  color: var(--primary);
+}
+.p-button.p-button-text:hover {
+  background-color: rgba(96, 153, 239, 0.08);
+}
+
+.p-button.p-button-outlined {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.p-button.p-button-outlined:hover {
+  background-color: color-mix(in srgb, var(--primary) 10%, white);
+}
+
+/* Primary gradient button (use class="btn-primary") */
+.p-button.btn-primary {
+  @apply !h-12 !px-6 !rounded-xl !font-semibold !text-base text-white border-0 shadow-md transition;
+  background-image: linear-gradient(to right, #4f46e5, #0284c7);
+}
+.p-button.btn-primary:hover:not(:disabled) {
+  background-image: linear-gradient(to right, #6366f1, #0ea5e9);
+  @apply shadow-lg;
+}
+.p-button.btn-primary:active:not(:disabled) {
+  background-image: linear-gradient(to right, #4338ca, #0369a1);
+}
+.p-button.btn-primary:focus-visible {
+  @apply ring-2 ring-indigo-500 ring-offset-2;
+}
+.p-button.btn-primary:disabled,
+.p-button.p-disabled.btn-primary {
+  background-image: linear-gradient(to right, #e5e7eb, #e5e7eb);
+  @apply text-gray-700 opacity-100 cursor-not-allowed shadow-none;
+}
+.p-button.btn-primary:disabled .p-button-label {
+  @apply text-gray-700;
+}
+
+/* Subtle text button used in headers */
+.p-button.btn-ghost {
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  color: #334155; /* slate-700 */
+}
+.p-button.btn-ghost:hover:not(:disabled):not(.p-disabled) {
+  background: rgba(15, 23, 42, 0.06); /* slate-900 @ 6% */
+}
+.p-button.btn-ghost:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent) !important;
+}
+
+/* Thin, colored outline action (works for <a pButton> and <button pButton>) */
+:is(a, button).p-button.btn-quotes,
+:is(a, button).p-button.btn-signin {
+  --btn-color: var(--primary);
+  background: #fff !important;
+  color: var(--btn-color) !important;
+  border: 0.5px solid color-mix(in srgb, var(--btn-color) 55%, white) !important;
+  box-shadow: none !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, box-shadow 0.15s ease;
+}
+:is(a, button).p-button.btn-quotes:hover:not(.p-disabled),
+:is(a, button).p-button.btn-signin:hover:not(.p-disabled) {
+  background: color-mix(in srgb, var(--btn-color) 10%, white) !important;
+  border-color: color-mix(in srgb, var(--btn-color) 75%, white) !important;
+}
+:is(a, button).p-button.btn-quotes:active:not(.p-disabled),
+:is(a, button).p-button.btn-signin:active:not(.p-disabled) {
+  background: color-mix(in srgb, var(--btn-color) 18%, white) !important;
+  border-color: var(--btn-color) !important;
+}
+:is(a, button).p-button.btn-signin {
+  height: 3rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+}
+:is(a, button).p-button.btn-signin.p-button-loading .p-button-icon,
+:is(a, button).p-button.btn-signin.p-button-loading .p-button-loading-icon {
+  color: currentColor;
+}
+:is(a, button).p-button.btn-signin:disabled,
+:is(a, button).p-button.p-disabled.btn-signin {
+  background: #f3f4f6 !important;
+  color: #9ca3af !important;
+  border-color: #e5e7eb !important;
+  box-shadow: none !important;
+}
+
+/* Fallback if color-mix isn't supported */
+@supports not (background: color-mix(in srgb, #000 10%, white)) {
+  :is(a, button).p-button.btn-quotes:hover:not(.p-disabled),
+  :is(a, button).p-button.btn-signin:hover:not(.p-disabled) {
+    background: rgba(96, 153, 239, 0.1) !important;
+    border-color: rgba(96, 153, 239, 0.75) !important;
+  }
+  :is(a, button).p-button.btn-quotes:active:not(.p-disabled),
+  :is(a, button).p-button.btn-signin:active:not(.p-disabled) {
+    background: rgba(96, 153, 239, 0.18) !important;
+    border-color: #6099ef !important;
+  }
+}
+
+/* ========= Tables ========= */
+.p-datatable .p-datatable-tbody > tr > td {
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+}
+.p-datatable .p-datatable-thead > tr > th {
+  @apply bg-white text-gray-700 font-medium;
+  border-bottom: 1px solid #e5e7eb;
+}
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Paginator */
+.p-paginator {
+  gap: 0.25rem;
+}
+.p-paginator .p-paginator-page,
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last {
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+}
+.p-paginator .p-dropdown {
+  min-width: 5.5rem;
+}
+.p-paginator .p-dropdown .p-dropdown-label {
+  text-align: center;
+  padding-right: 1.5rem;
+}
+
+/* ========= Tags ========= */
+.p-tag {
+  border-radius: 0.5rem;
+  background-color: color-mix(in srgb, var(--primary) 15%, white);
+  color: #1e293b;
+}
+
+/* ========= Links / nav ========= */
+.link {
+  @apply flex items-center gap-3 cursor-pointer text-[1rem] hover:bg-[var(--light)] p-2 rounded-lg;
+}
+.link i {
+  @apply text-lg;
+}
+.active {
+  @apply bg-[var(--light)] text-[var(--primary)] font-['neueBold'];
+}
+
+/* ========= Disabled ========= */
+:is(input, select, textarea, .p-inputtext, .p-dropdown, .p-calendar):disabled {
+  @apply bg-gray-100 text-gray-500 cursor-not-allowed;
+}
+:disabled.btn__outline {
+  @apply !bg-[var(--light)] text-black border border-black hover:text-black;
+}
+
+/* ========= Your utility buttons ========= */
+.btn__primary {
+  @apply h-12 w-full bg-[var(--primary)] text-white flex items-center justify-center rounded-lg hover:bg-[var(--grey)];
+}
+.btn__outline {
+  @apply h-11 w-full border-[1px] border-[var(--primary)] bg-white text-[var(--primary)] flex items-center justify-center rounded-lg hover:bg-[var(--primary)] hover:text-white;
+}
+
+/* ========= Cards ========= */
+.analyticsCard {
+  @apply flex items-center gap-2 bg-white p-4 py-5 rounded-xl;
+}
+.card__content {
+  @apply font-bold text-2xl;
+}
+
+/* ========= Toasts ========= */
+.toast-success {
+  background-color: #01cf98 !important;
+  border: 0.5px solid white;
+  box-shadow: none !important;
+}
+.toast-error {
+  background-color: rgb(206, 81, 81) !important;
+  border: 0.2px solid white;
+  box-shadow: none !important;
+}
+
+/* ========= Errors ========= */
+.error {
+  @apply text-red-500;
+}
+
+/* ========= Tabs ========= */
+.p-tabmenu-nav .p-tabmenuitem {
+  @apply px-3 py-1 text-sm rounded-md font-medium text-gray-600 hover:text-[var(--primary)]
+         transition-colors transition-shadow duration-300 ease-in-out;
+}
+.p-tabmenu-nav .p-tabmenuitem.p-highlight {
+  @apply bg-[var(--primary)/10] text-[var(--primary)] font-semibold border border-[var(--primary)] border-opacity-30 shadow-none duration-300 ease-in-out;
+}
+.p-tabmenu-nav {
+  @apply border-none p-0 gap-1;
+}
+
+/* ========= Focus ========= */
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--primary) 70%, transparent);
+  outline-offset: 2px;
+}
+
+/* ========= Fluid content column ========= */
+.page-fluid {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .page-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .page-fluid {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* ========= Confirm Dialog (Logout) ========= */
+.logout-dialog.p-dialog {
+  width: 28rem;
+  max-width: calc(100vw - 2rem);
+}
+.logout-dialog .p-dialog-header {
+  padding: 1rem 1.25rem;
+}
+.logout-dialog .p-dialog-content {
+  padding: 0.9rem 1.25rem 0.75rem;
+  color: #334155;
+} /* slate-700 */
+.logout-dialog .p-confirm-dialog-icon {
+  color: #f59e0b;
+} /* amber-500 */
+.logout-dialog .p-dialog-footer {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem 1rem;
+}
+.logout-dialog .p-dialog-footer .p-button {
+  height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+}
+.btn-logout {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
+.btn-logout:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+.btn-logout:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+}
+.btn-cancel {
+  background: transparent;
+  color: #334155;
+  border: 1px solid #e5e7eb;
+}
+.btn-cancel:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+.btn-cancel:focus {
+  box-shadow: 0 0 0 3px rgba(96, 153, 239, 0.25);
+}
+
+/* ========= Equal 3-column PrimeNG table (your Products) ========= */
+.equal-cols-3 .p-datatable-wrapper table {
+  table-layout: fixed;
+  width: 100%;
+}
+.equal-cols-3 col {
+  width: calc(100% / 3);
+} /* 1/3 each */
+.equal-cols-3 .p-datatable-thead > tr > th,
+.equal-cols-3 .p-datatable-tbody > tr > td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  vertical-align: top;
+}
+.equal-cols-3 .p-datatable-thead > tr > th > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+.equal-cols-3 .p-datatable-thead > tr > th:last-child > div {
+  justify-content: flex-end;
+}
+
+/* ========= Create Quote (card + modal friendly) ========= */
+
+/* Card shell for the component */
+.cq-card {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+/* Remove inner padding so our form controls spacing */
+.cq-card .p-card-body,
+.cq-card .p-card-content {
+  padding: 0;
+}
+
+/* If you still render a header outside the card (legacy), keep styling */
+.cq {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.cq-header {
+  padding: 1rem 1.25rem 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+/* Body is the scroll container in a dialog; cap height for nice scrolling */
+.cq-body {
+  padding: 1rem 1.25rem 1rem; /* slightly more top padding for balance */
+  max-height: min(72vh, calc(100vh - 12rem));
+  overflow: auto;
+  background: #fff;
+}
+
+/* Two-column grid on md+; single column on mobile */
+.cq-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+@media (min-width: 768px) {
+  .cq-grid {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    gap: 1.25rem;
+  }
+}
+
+/* Fields column spacing */
+.cq-fields {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+/* Sticky action bar at bottom of scroll area */
+.cq-actions {
+  position: sticky;
+  bottom: 0;
+  padding-top: 0.75rem;
+  background: linear-gradient(to top, #fff, rgba(255, 255, 255, 0.9));
+  border-top: 1px solid #f1f5f9; /* slate-100 */
+}
+
+/* Summary panel */
+.cq-summary {
+  position: sticky;
+  top: 0.75rem;
+  align-self: start;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+  min-width: 20rem;
+}
+
+/* Tidy field blocks (label over control) */
+.cq-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.cq-field > label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a; /* slate-900 */
+}
+
+/* UPDATED: label row with inline info icon (keeps icon next to label) */
+.cq-label {
+  display: inline-flex; /* inline cluster, doesn't push to edge */
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+  color: #0f172a; /* slate-900 */
+  line-height: 1.25rem;
+}
+
+/* Hint icon (works with PrimeNG Tooltip) */
+.cq-hint-icon {
+  font-size: 0.95rem;
+  color: #94a3b8; /* slate-400 */
+  cursor: help;
+}
+.cq-hint-icon:hover {
+  color: var(--primary);
+}
+
+/* Consistent control sizes inside this form */
+.cq .p-inputtext,
+.cq .p-dropdown,
+.cq .p-calendar,
+.cq .p-password input,
+.cq .p-inputnumber .p-inputtext {
+  height: var(--cq-control-h);
+  border-radius: 0.75rem;
+}
+.cq .p-dropdown .p-dropdown-label {
+  line-height: calc(var(--cq-control-h) - 2px);
+}
+.cq .p-inputnumber .p-inputtext {
+  line-height: normal;
+}
+
+/* Slightly tighter vertical rhythm on md+ */
+@media (min-width: 768px) {
+  .cq .grid {
+    row-gap: 1.1rem;
+  }
+}
+
+/* Ensure tooltips sit above the dialog content */
+.p-tooltip {
+  z-index: 12010;
+}
+
+.admin-role-panel {
+  z-index: 12050 !important;
+}

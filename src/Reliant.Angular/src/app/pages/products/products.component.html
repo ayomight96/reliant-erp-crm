@@ -1,0 +1,107 @@
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+  <h2 class="text-2xl font-black font-['neueBold'] text-gray-900 m-0">Products</h2>
+  <div class="text-sm text-gray-600">
+    <span class="font-medium">
+      {{ (dt.filteredValue?.length ?? rows.length) || 0 }}
+    </span>
+    <ng-container *ngIf="dt.filteredValue">
+      <span class="text-gray-400">/ {{ rows.length }}</span>
+    </ng-container>
+    total
+  </div>
+</div>
+
+<!-- Filters / actions -->
+<div class="flex items-center gap-3 pb-3 pt-4">
+  <div class="relative w-full md:w-[36rem]">
+    <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+    <input
+      pInputText
+      class="w-full h-11 rounded-xl pl-9 pr-10"
+      placeholder="Search name or type"
+      [(ngModel)]="q"
+      (ngModelChange)="onQueryChange($event)"
+      (keyup.enter)="search()"
+    />
+    <button
+      *ngIf="q"
+      type="button"
+      aria-label="Clear"
+      class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+      (click)="reset()">
+      <i class="pi pi-times"></i>
+    </button>
+  </div>
+
+  <button pButton type="button" label="Search" class="p-button-sm p-2" [loading]="loading" (click)="search()"></button>
+</div>
+
+<!-- Table -->
+<p-table
+  #dt
+  [value]="rows"
+  [loading]="loading"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[10, 20, 50, 100]"
+  [rowHover]="true"
+  responsiveLayout="scroll"
+  [globalFilterFields]="['name','productType','basePrice']"
+  [tableStyle]="{ width: '100%' }"
+  styleClass="p-datatable-sm p-datatable-gridlines w-full equal-cols"
+  [style]="{ '--cols': cols.length }"
+>
+  <ng-template pTemplate="colgroup">
+    <colgroup>
+      <col *ngFor="let _ of cols" />
+    </colgroup>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="name" class="sticky top-0 bg-white">
+        <div class="flex items-center gap-2">
+          <span>Name</span>
+          <p-sortIcon field="name"></p-sortIcon>
+        </div>
+      </th>
+      <th pSortableColumn="productType" class="sticky top-0 bg-white">
+        <div class="flex items-center gap-2">
+          <span>Type</span>
+          <p-sortIcon field="productType"></p-sortIcon>
+        </div>
+      </th>
+      <th pSortableColumn="basePrice" class="sticky top-0 bg-white">
+        <div class="flex items-center justify-end gap-2">
+          <span>Base Price</span>
+          <p-sortIcon field="basePrice"></p-sortIcon>
+        </div>
+      </th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="loadingbody">
+    <tr *ngFor="let _ of [1,2,3,4,5,6,7,8,9,10]">
+      <td><p-skeleton height="1.2rem"></p-skeleton></td>
+      <td><p-skeleton height="1.2rem" width="8rem"></p-skeleton></td>
+      <td class="text-right"><p-skeleton height="1.2rem" width="6rem"></p-skeleton></td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-p>
+    <tr>
+      <td class="font-medium whitespace-normal break-words align-top">{{ p.name }}</td>
+      <td class="whitespace-normal break-words align-top">
+        <p-tag [value]="p.productType | titlecase" [severity]="tagSeverity(p)" styleClass="!text-xs !py-1 !px-2"></p-tag>
+      </td>
+      <td class="text-right tabular-nums whitespace-normal break-words align-top">
+        {{ p.basePrice | currency:'GBP':'symbol':'1.2-2' }}
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr><td colspan="3" class="text-center text-gray-500 py-6">No products found.</td></tr>
+  </ng-template>
+</p-table>
