@@ -294,4 +294,4 @@ USE_EXTERNAL_LLM=true
 
 ## License
 
-For demo/educational use. Replace or add a SPDX license identifier as needed.
+For demo use.
